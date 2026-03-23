@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'Maven3'
+        jdk 'JDK11'
+    }
+
+    parameters {
+        string(name: 'ENV', defaultValue: 'qa', description: 'Environment')
+        string(name: 'TAG', defaultValue: 'smoke', description: 'Test Tag')
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/your-username/your-repo.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                bat 'mvn clean compile'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                bat "mvn test -Denv=%ENV% -Dgroups=%TAG%"
+            }
+        }
+    }
+
+    post {
+        always {
+            junit '**/target/surefire-reports/*.xml'
+            archiveArtifacts artifacts: 'target/**', fingerprint: true
+        }
+        failure {
+            echo 'Tests Failed ❌'
+        }
+        success {
+            echo 'Tests Passed ✅'
+        }
+    }
+}

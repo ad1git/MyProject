@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Failed suite [RestAssuredSuite]">
+  <test thread-count="5" name="APITests(failed)">
+    <classes>
+      <class name="tests.UserApiTest">
+        <methods>
+          <include name="updateUser"/>
+          <include name="setup"/>
+        </methods>
+      </class> <!-- tests.UserApiTest -->
+    </classes>
+  </test> <!-- APITests(failed) -->
+</suite> <!-- Failed suite [RestAssuredSuite] -->

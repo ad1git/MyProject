@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<suite name="RestAssuredSuite">
+   <listeners>
+        <listener class-name="utils.RetryListener"/>
+        <listener class-name="utils.TestListener"/>  <!-- ✅ ADD THIS -->
+    </listeners>
+    <test name="API Tests">
+        <classes>
+            <class name="tests.UserApiTest"/>
+        </classes>
+    </test>
+</suite>
