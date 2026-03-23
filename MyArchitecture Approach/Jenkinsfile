@@ -8,11 +8,10 @@ pipeline {
 
     parameters {
         string(name: 'ENV', defaultValue: 'qa', description: 'Environment')
-        string(name: 'TAG', defaultValue: 'smoke', description: 'Test Tag')
+        string(name: 'TAG', defaultValue: 'smoke', description: 'Test Tag (smoke/regression/all)')
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 git 'https://github.com/your-username/your-repo.git'
@@ -25,9 +24,31 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
+        stage('Smoke Test') {
+            when {
+                expression { params.TAG == 'smoke' || params.TAG == 'all' }
+            }
             steps {
-                bat "mvn test -Denv=%ENV% -Dgroups=%TAG%"
+                echo "Running Smoke Tests on ${params.ENV} environment..."
+                bat "mvn test -Denv=%ENV% -Dgroups=smoke"
+            }
+        }
+
+        stage('Regression Test') {
+            when {
+                expression { params.TAG == 'regression' || params.TAG == 'all' }
+            }
+            steps {
+                echo "Running Regression Tests on ${params.ENV} environment..."
+                bat "mvn test -Denv=%ENV% -Dgroups=regression"
+            }
+        }
+
+        stage('HTML Report') {
+            steps {
+                echo 'Generating HTML report...'
+                bat 'mvn surefire-report:report'
+                archiveArtifacts artifacts: 'target/site/surefire-report.html', fingerprint: true
             }
         }
     }
@@ -35,7 +56,6 @@ pipeline {
     post {
         always {
             junit '**/target/surefire-reports/*.xml'
-            archiveArtifacts artifacts: 'target/**', fingerprint: true
         }
         failure {
             echo 'Tests Failed ❌'
